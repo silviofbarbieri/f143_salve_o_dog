@@ -5,7 +5,7 @@ import {
   Animated,
   FlatList,
 } from 'react-native';
-import Store from '.Store';
+import Store from './Store';
 import { MapsComponent } from './mapsComponent';
 import { CARD_WIDTH } from './Store';
 
