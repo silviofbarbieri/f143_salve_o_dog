@@ -1,157 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Animated,
-  FlatList,
-} from 'react-native';
+import { useRef, useEffect, useState } from "react";
+import { MapContainer, useMap, TileLayer, Marker, Popup } from "react-leaflet";
+import styles from "./controlling-the-map-from-outside-the-map.module.css";
+import tileLayer from "../util/tileLayer";
 
-// Wait for the document to be ready
-document.addEventListener('DOMContentLoaded', function () {
-  // Create a map instance and set the initial view coordinates and zoom level
-  var map = L.map('map').setView([51.505, -0.09], 13);
+const center = [52.2295, 21.01];
 
-
-  // Add a tile layer to the map from OpenStreetMap
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
-
-
-  // Create a marker with popup and add it to the map
-  var marker = L.marker([51.505, -0.09]).addTo(map);
-  marker.bindPopup("Hello, I'm a marker!").openPopup();
-
-
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
-
-const Locations = [
+const points = [
   {
-    "name" : "Bakery Bread Man",
-    "image" : "https://cdn.pixabay.com/photo/2016/11/30/14/08/cafe-1872888_960_720.jpg",
-    "lat" : 4.696005,
-    "lon" : -74.040355
+    id: "1",
+    lat: 52.228785157729114,
+    lng: 21.006867885589603,
+    title: "Marker 1",
   },
   {
-    "name" : "House Coffee",
-    "image" : "https://cdn.pixabay.com/photo/2015/05/15/14/55/cafe-768771_960_720.jpg",
-    "lat" : 4.697481,
-    "lon" : -74.034980
+    id: "2",
+    lat: 52.22923201880194,
+    lng: 21.00897073745728,
+    title: "Marker 2",
   },
   {
-    "name" : "Deluxe Restaurant",
-    "image" : "https://cdn.pixabay.com/photo/2015/04/20/13/30/kitchen-731351_960_720.jpg",
-    "lat" : 4.690990,
-    "lon" : -74.041589
+    id: "3",
+    lat: 52.22963944703663,
+    lng: 21.01091265678406,
+    title: "Marker 3",
   },
   {
-    "name" : "Breakfast House",
-    "image" : "https://cdn.pixabay.com/photo/2015/03/26/09/42/breakfast-690128_960_720.jpg",
-    "lat" : 4.698775,
-    "lon" : -74.040205
+    id: "4",
+    lat: 52.229928587386496,
+    lng: 21.01218938827515,
+    title: "Marker 4",
   },
-  {
-    "name" : "Bread Man Bakery",
-    "image" : "https://cdn.pixabay.com/photo/2016/11/30/14/08/cafe-1872888_960_720.jpg",
-    "lat" : 4.694487,
-    "lon" : -74.042319
-  },
-  {
-    "name" : "Dream Coffee",
-    "image" : "https://cdn.pixabay.com/photo/2015/05/15/14/55/cafe-768771_960_720.jpg",
-    "lat" : 4.697973, 
-    "lon" : -74.041235
-  },
-  {
-    "name" : "Home Restaurent",
-    "image" : "https://cdn.pixabay.com/photo/2015/04/20/13/30/kitchen-731351_960_720.jpg",
-    "lat" : 4.693739,
-    "lon" : -74.038006
-  },
-  {
-    "name" : "House Breakfast",
-    "image" : "https://cdn.pixabay.com/photo/2015/03/26/09/42/breakfast-690128_960_720.jpg",
-    "lat" : 4.698775,
-    "lon" : -74.040205
-  }
 ];
 
-const App = () => {
-  const [ longitude, setLongitude ] = useState(0);
-  const [ latitude, setLatitude ] = useState(0);
-  const [ offsetStart, setOffsetStart ] = useState(0);
-  const [ index, setIndex ] = useState(0)
-  const x = new Animated.Value(0);
-
-  const updatePosition = (index) => {
-    setLatitude(Locations[index].lat);
-    setLongitude(Locations[index].lon);
-  }
-
-  useEffect(() => {
-    updatePosition(0)
-  }, [])
-  
-  const updateState = (event) => {
-    let position = event.nativeEvent.contentOffset.x;
-    let i = Math.floor((position - offsetStart) / CARD_WIDTH)
-    if(index !== i){
-      updatePosition(i);
-      setIndex(i);
-    }
-  }
-
-  const onScroll = Animated.event(
-    [{ nativeEvent: { 
-      contentOffset: { x } 
-    }}], { 
-      listener: (event) => updateState(event), 
-      useNativeDriver: true , 
-    }
-  );
-
-  const _updateRangePositions = (offsetStart) => {
-    setOffsetStart(offsetStart)
-  }
-
+const ListMarkers = ({ onItemClick }) => {
   return (
-      <View style={{flex:1}}>
-        <MapsComponent 
-        latitude={ latitude } 
-        longitude={ longitude } 
-        />   
-        <View style={styles.listStores}>
-          <AnimatedFlatList
-            onScroll={ onScroll }
-            scrollEventThrottle={16}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            data={ Locations }
-            renderItem={({ index, item}) => (
-              <Store 
-              index={index} 
-              item={item} 
-              x={x} 
-              updateRangePositions={_updateRangePositions} />
-            )}
-            keyExtractor={(item) => item.index }
-          /> 
-        </View>
-      </View>
+    <div className={styles.markersList}>
+      {points.map(({ title }, index) => (
+        <div
+          className={styles.markerItem}
+          key={index}
+          onClick={(e) => {
+            e.preventDefault();
+            onItemClick(index);
+          }}
+        >
+          {title}
+        </div>
+      ))}
+    </div>
   );
 };
 
-const styles = StyleSheet.create({
-  listStores:{    
-    marginBottom:15,
-    width: '100%', 
-    position: 'absolute',
-    bottom: 0
+const MyMarkers = ({ data, selectedIndex }) => {
+  return data.map((item, index) => (
+    <PointMarker
+      key={index}
+      content={item.title}
+      center={{ lat: item.lat, lng: item.lng }}
+      openPopup={selectedIndex === index}
+    />
+  ));
+};
+
+const PointMarker = ({ center, content, openPopup }) => {
+  const map = useMap();
+  const markerRef = useRef(null);
+
+  useEffect(() => {
+    if (openPopup) {
+      map.flyToBounds([center]);
+      markerRef.current.openPopup();
+    }
+  }, [map, center, openPopup]);
+
+  return (
+    <Marker ref={markerRef} position={center}>
+      <Popup>{content}</Popup>
+    </Marker>
+  );
+};
+
+const MapWrapper = () => {
+  const [selected, setSelected] = useState();
+
+  function handleItemClick(index) {
+    setSelected(index);
   }
-});
 
+  return (
+    <>
+      <MapContainer center={center} zoom={16} scrollWheelZoom={false}>
+        <TileLayer {...tileLayer} />
 
+        <MyMarkers selectedIndex={selected} data={points} />
+      </MapContainer>
 
+      <ListMarkers data={points} onItemClick={handleItemClick} />
+    </>
+  );
+};
 
-
-
+export default MapWrapper;
