@@ -1,14 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Animated,
-  FlatList,
-} from 'react-native';
-import Store from './Store';
-import { MapsComponent } from './mapsComponent';
-import { CARD_WIDTH } from './Store';
-
 // Wait for the document to be ready
 document.addEventListener('DOMContentLoaded', function () {
   // Create a map instance and set the initial view coordinates and zoom level
@@ -20,6 +9,23 @@ document.addEventListener('DOMContentLoaded', function () {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
+
+  // Create a marker with popup and add it to the map
+  var marker = L.marker([51.505, -0.09]).addTo(map);
+  marker.bindPopup("Hello, I'm a marker!").openPopup();
+});
+
+
+import React, { useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  View,
+  Animated,
+  FlatList,
+} from 'react-native';
+import Store from './Store';
+import { MapsComponent } from './mapsComponent';
+import { CARD_WIDTH } from './Store';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
