@@ -5,9 +5,9 @@ import {
   Animated,
   FlatList,
 } from 'react-native';
-import Store from './components/Store';
-import { MapsComponent } from './components/MapsComponent';
-import { CARD_WIDTH } from './components/Store';
+import Store from '.Store';
+import { MapsComponent } from './mapsComponent';
+import { CARD_WIDTH } from './Store';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
